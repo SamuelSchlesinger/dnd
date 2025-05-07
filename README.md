@@ -1,26 +1,25 @@
-# Riddler: The Ancient Guardian of Riddles
+# Mind Reader: 20 Questions Game
 
 ```
- ____  _     _     _ _           
-|  _ \(_) __| | __| | | ___ _ __ 
-| |_) | |/ _` |/ _` | |/ _ \ '__|
-|  _ <| | (_| | (_| | |  __/ |   
-|_| \_\_|\__,_|\__,_|_|\___|_|   
+ __  __ _           _   ____                _           
+|  \/  (_)_ __   __| | |  _ \ ___  __ _  __| | ___ _ __ 
+| |\/| | | '_ \ / _` | | |_) / _ \/ _` |/ _` |/ _ \ '__|
+| |  | | | | | | (_| | |  _ <  __/ (_| | (_| |  __/ |   
+|_|  |_|_|_| |_|\__,_| |_| \_\___|\__,_|\__,_|\___|_|   
+                                                        
 ```
 
 ## About
 
-Riddler is an interactive command-line game where you face the Ancient Guardian of Riddles - a mystical entity powered by GPT-4o that will challenge your wit and reward your intellect. Solve riddles of varying difficulty to unlock profound insights and wisdom.
+Mind Reader is an interactive command-line implementation of the classic 20 Questions game powered by GPT-4o. The Mind Reader thinks of something from a selected category, and you must guess what it is by asking up to 20 yes/no questions.
 
 ## Features
 
 - **Beautiful CLI Interface**: Enjoy a visually appealing terminal experience with colorful text, progress spinners, and ASCII art
-- **Three Difficulty Levels**: Test your skills with easy, medium, or hard riddles
-- **Dynamic AI-Generated Content**: Every riddle is uniquely crafted by the Guardian (GPT-4o)
-- **Hint System**: Stuck on a riddle? Ask for a hint (but beware the score penalty!)
-- **Scoring System**: Earn points based on difficulty, attempts, and hints used
-- **Auto-Save**: Your game progress is automatically saved so you can continue your quest later
-- **Profound Rewards**: Every correct answer unlocks a piece of wisdom related to the riddle
+- **Three Categories**: Choose from Person, Place, or Thing
+- **Dynamic AI-Generated Content**: The Mind Reader (GPT-4o) thinks of unique subjects for you to guess
+- **20 Questions Format**: Ask up to 20 yes/no questions to narrow down the answer
+- **Auto-Save**: Your game progress is automatically saved so you can continue your game later
 
 ## Installation
 
@@ -39,16 +38,14 @@ Riddler is an interactive command-line game where you face the Ancient Guardian 
 ## How to Play
 
 1. Start a new game or continue a saved one
-2. Choose your difficulty level: Easy, Medium, or Hard
-3. The Ancient Guardian will present you with a riddle
-4. Type your answer and press Enter
-5. If correct, you'll receive wisdom and points
-6. If incorrect, keep trying!
+2. Choose a category: Person, Place, or Thing
+3. Ask up to 20 yes/no questions to gather information
+4. Make your final guess at any time by typing 'guess'
+5. See if you've correctly identified what the Mind Reader was thinking!
 
 ### Special Commands
 
-- Type `hint` to receive a hint from the Guardian
-- Type `riddle` to see the current riddle again
+- Type `guess` to make your final guess about what the Mind Reader is thinking of
 
 ## Requirements
 
@@ -61,4 +58,4 @@ This project is open source and available under the MIT License.
 
 ---
 
-*"Wisdom awaits those who unravel the Guardian's mysteries..."*
+*"Can you guess what I'm thinking?"*
