@@ -1,25 +1,36 @@
-# Mind Reader: 20 Questions Game
+# Dungeons & Dragons: AI Dungeon Master
 
 ```
- __  __ _           _   ____                _           
-|  \/  (_)_ __   __| | |  _ \ ___  __ _  __| | ___ _ __ 
-| |\/| | | '_ \ / _` | | |_) / _ \/ _` |/ _` |/ _ \ '__|
-| |  | | | | | | (_| | |  _ <  __/ (_| | (_| |  __/ |   
-|_|  |_|_|_| |_|\__,_| |_| \_\___|\__,_|\__,_|\___|_|   
-                                                        
+  _____                                                          
+ |  __ \                                                         
+ | |  | |_   _ _ __   __ _  ___  ___  _ __  ___    __ _  _ __   _ __  
+ | |  | | | | | '_ \ / _` |/ _ \/ _ \| '_ \/ __|  / _` || '_ \ | '_ \ 
+ | |__| | |_| | | | | (_| |  __/ (_) | | | \__ \ | (_| || | | || | | |
+ |_____/ \__,_|_| |_|\__, |\___|\___/|_| |_|___/  \__,_||_| |_||_| |_|
+                      __/ |                                     
+  _____              |___/                                      
+ |  __ \                                                        
+ | |  | |_ __ __ _  __ _  ___  _ __  ___                        
+ | |  | | '__/ _` |/ _` |/ _ \| '_ \/ __|                       
+ | |__| | | | (_| | (_| | (_) | | | \__ \                       
+ |_____/|_|  \__,_|\__, |\___/|_| |_|___/                       
+                    __/ |                                       
+                   |___/                                        
 ```
 
 ## About
 
-Mind Reader is an interactive command-line implementation of the classic 20 Questions game powered by GPT-4o. The Mind Reader thinks of something from a selected category, and you must guess what it is by asking up to 20 yes/no questions.
+Experience the magic of Dungeons & Dragons with an AI Dungeon Master! This immersive command-line game brings the theater-of-the-mind experience of D&D to life through rich storytelling, character creation, and interactive gameplay powered by GPT-4o. Create your character, embark on epic quests, and let your imagination guide your adventure.
 
 ## Features
 
-- **Beautiful CLI Interface**: Enjoy a visually appealing terminal experience with colorful text, progress spinners, and ASCII art
-- **Three Categories**: Choose from Person, Place, or Thing
-- **Dynamic AI-Generated Content**: The Mind Reader (GPT-4o) thinks of unique subjects for you to guess
-- **20 Questions Format**: Ask up to 20 yes/no questions to narrow down the answer
-- **Auto-Save**: Your game progress is automatically saved so you can continue your game later
+- **Complete D&D 5e Character Creation**: Create characters with customizable races, classes, abilities, skills, and backgrounds
+- **AI Dungeon Master**: Experience dynamic storytelling with an AI that crafts rich narratives and responds to your actions
+- **Immersive World**: Explore detailed fantasy environments with evocative descriptions
+- **Skill Checks & Dice Rolling**: Test your abilities with authentic D&D mechanics
+- **Character Progression**: Level up and develop your character as you adventure
+- **Colorful CLI Interface**: Enjoy a visually appealing terminal experience with colorful text, ASCII art, and intuitive UI
+- **Auto-Save**: Your adventure progress is automatically saved so you can continue your journey later
 
 ## Installation
 
@@ -29,7 +40,7 @@ Mind Reader is an interactive command-line implementation of the classic 20 Ques
    ```
    OPENAI_API_KEY=your_api_key_here
    ```
-4. Build and run the game:
+5. Build and run the game:
    ```
    cargo build --release
    cargo run --release
@@ -37,20 +48,49 @@ Mind Reader is an interactive command-line implementation of the classic 20 Ques
 
 ## How to Play
 
-1. Start a new game or continue a saved one
-2. Choose a category: Person, Place, or Thing
-3. Ask up to 20 yes/no questions to gather information
-4. Make your final guess at any time by typing 'guess'
-5. See if you've correctly identified what the Mind Reader was thinking!
+1. Start a new adventure or continue a saved one
+2. Create your character:
+   - Choose race, class, and background
+   - Determine ability scores (roll, standard array, or point buy)
+   - Select skill proficiencies
+   - Receive starting equipment
+3. Begin your adventure with the AI Dungeon Master
+4. Take actions by describing what your character does
+5. Roll skill checks when attempting difficult tasks
+6. Roll dice for combat and other game mechanics
+7. Save your progress at any time
 
-### Special Commands
+## Game Features
 
-- Type `guess` to make your final guess about what the Mind Reader is thinking of
+### Character Creation
+The game supports D&D 5e character creation with:
+- 9 playable races
+- 13 character classes
+- 13 character backgrounds
+- Multiple ability score generation methods
+- Class-appropriate skill proficiencies
+- Starting equipment based on class
+
+### AI Storytelling
+The AI Dungeon Master creates:
+- Engaging campaign hooks and quests
+- Detailed descriptions of locations and NPCs
+- Dynamic responses to player actions
+- Appropriate challenges based on character abilities
+- A consistent and immersive fantasy world
+
+### Dice Mechanics
+Authentic D&D dice mechanics include:
+- Skill checks (d20 + ability modifier + proficiency)
+- Variable dice types (d4, d6, d8, d10, d12, d20, d100)
+- Multi-dice rolls (2d6, 3d8, etc.)
+- Automatic calculation of modifiers and bonuses
 
 ## Requirements
 
 - Rust 2024 Edition
 - OpenAI API key (for GPT-4o access)
+- Terminal with color support
 
 ## License
 
@@ -58,4 +98,4 @@ This project is open source and available under the MIT License.
 
 ---
 
-*"Can you guess what I'm thinking?"*
+*"Roll for initiative, adventurer!"*
