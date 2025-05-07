@@ -260,6 +260,62 @@ fn print_dice_roll(dice_type: &str, results: &[u32]) {
              sum.to_string().bright_green().bold());
 }
 
+// Function to let the DM narrate the result of a general dice roll
+async fn process_dice_roll(
+    dm: &impl Chat,
+    dice_type: &str,
+    results: &[u32],
+    purpose: &str,
+    state: &mut GameState,
+) -> Result<String, Box<dyn Error>> {
+    // Skip DM narration if no purpose is provided
+    if purpose.is_empty() {
+        return Ok("".to_string());
+    }
+    
+    let sum: u32 = results.iter().sum();
+    let dice_results = results
+        .iter()
+        .map(|d| d.to_string())
+        .collect::<Vec<String>>()
+        .join(", ");
+    
+    let roll_prompt = format!(
+        "The player ({} the {} {}) rolls {} for the following purpose: \"{}\"
+        Dice roll result: {} [{}] = {}
+        
+        As the DM, narrate the outcome of this roll in the context of the current situation.
+        Be descriptive and evocative, explaining how the dice roll affects the player's attempt.
+        Continue the scene after describing the result.",
+        state.character.name,
+        state.character.race,
+        state.character.class,
+        dice_type,
+        purpose,
+        dice_type,
+        dice_results,
+        sum
+    );
+    
+    let response = dm_chat(
+        dm,
+        &roll_prompt,
+        state.history.clone(),
+        "Failed to process dice roll",
+        "The Dungeon Master is interpreting your roll...",
+        1500,
+    )
+    .await?;
+    
+    state.history.push(Message::user(&roll_prompt));
+    state.history.push(Message::assistant(&response));
+    
+    state.last_saved = Local::now().to_rfc3339();
+    save_game(state)?;
+    
+    Ok(response)
+}
+
 // AI DM interactions
 async fn dm_chat<C>(
     dm: &C,
@@ -434,6 +490,7 @@ async fn roll_skill_check(
     dm: &impl Chat,
     skill: &str,
     roll_result: u32,
+    purpose: &str,
     state: &mut GameState,
 ) -> Result<String, Box<dyn Error>> {
     // Get the appropriate ability modifier based on the skill
@@ -459,14 +516,16 @@ async fn roll_skill_check(
     let total = roll_result as i32 + ability_mod + if *is_proficient { prof_bonus } else { 0 };
     
     let roll_prompt = format!(
-        "The player ({} the {} {}) rolls a {} check.
+        "The player ({} the {} {}) rolls a {} check for the following purpose: \"{}\"
         Dice roll: {}
         Ability modifier: {}
         Proficiency: {}
         Total: {}
         
-        Interpret this skill check result in the current context. 
-        Describe the outcome of their action based on this result.
+        As the DM, first evaluate whether this is an appropriate use of the {} skill.
+        If it is appropriate, interpret this skill check result and describe the outcome.
+        If it's not appropriate, explain why and suggest a better approach or skill.
+        
         For reference, typical difficulty classes are:
         - Easy: 10
         - Medium: 15
@@ -479,10 +538,12 @@ async fn roll_skill_check(
         state.character.race,
         state.character.class,
         skill,
+        purpose,
         roll_result,
         ability_mod,
-        if *is_proficient { "Yes (+2)" } else { "No" },
-        total
+        if *is_proficient { format!("Yes (+{})", prof_bonus) } else { "No".to_string() },
+        total,
+        skill
     );
     
     let response = dm_chat(
@@ -933,8 +994,13 @@ async fn main() -> Result<(), Box<dyn Error>> {
                             }
                             println!("Total: {}", total.to_string().bright_green().bold());
                             
+                            // Ask the player what they're rolling for
+                            let purpose: String = Input::with_theme(&ColorfulTheme::default())
+                                .with_prompt("What are you trying to do with this check?")
+                                .interact_text()?;
+
                             // Process the skill check with the DM
-                            let dm_response = roll_skill_check(&dungeon_master, skill, roll_result, &mut state).await?;
+                            let dm_response = roll_skill_check(&dungeon_master, skill, roll_result, &purpose, &mut state).await?;
                             print_fancy_message("Dungeon Master:", "cyan");
                             println!("{}", dm_response.bright_white());
                         },
@@ -964,10 +1030,37 @@ async fn main() -> Result<(), Box<dyn Error>> {
                                 .interact_text()?;
                             
                             let num_dice = num_dice.parse::<u32>().unwrap_or(1);
+                            
+                            // Ask what the roll is for
+                            let purpose: String = Input::with_theme(&ColorfulTheme::default())
+                                .with_prompt("What are you rolling for? (optional)")
+                                .allow_empty(true)
+                                .interact_text()?;
+                            
                             let results = roll_dice(num_dice, sides);
                             
-                            print_fancy_message("Dice Roll", "yellow");
+                            if purpose.is_empty() {
+                                print_fancy_message("Dice Roll", "yellow");
+                            } else {
+                                print_fancy_message(&format!("Dice Roll: {}", purpose), "yellow");
+                            }
                             print_dice_roll(&format!("{}d{}", num_dice, sides), &results);
+                            
+                            // Let the DM narrate the roll result if a purpose was provided
+                            if !purpose.is_empty() {
+                                let dm_response = process_dice_roll(
+                                    &dungeon_master, 
+                                    &format!("{}d{}", num_dice, sides), 
+                                    &results, 
+                                    &purpose, 
+                                    &mut state
+                                ).await?;
+                                
+                                if !dm_response.is_empty() {
+                                    print_fancy_message("Dungeon Master:", "cyan");
+                                    println!("{}", dm_response.bright_white());
+                                }
+                            }
                         },
                         3 => {
                             // Show character sheet
@@ -1111,8 +1204,13 @@ async fn main() -> Result<(), Box<dyn Error>> {
                                     }
                                     println!("Total: {}", total.to_string().bright_green().bold());
                                     
+                                    // Ask the player what they're rolling for
+                                    let purpose: String = Input::with_theme(&ColorfulTheme::default())
+                                        .with_prompt("What are you trying to do with this check?")
+                                        .interact_text()?;
+
                                     // Process the skill check with the DM
-                                    let dm_response = roll_skill_check(&dungeon_master, skill, roll_result, &mut state).await?;
+                                    let dm_response = roll_skill_check(&dungeon_master, skill, roll_result, &purpose, &mut state).await?;
                                     print_fancy_message("Dungeon Master:", "cyan");
                                     println!("{}", dm_response.bright_white());
                                 },
@@ -1142,10 +1240,37 @@ async fn main() -> Result<(), Box<dyn Error>> {
                                         .interact_text()?;
                                     
                                     let num_dice = num_dice.parse::<u32>().unwrap_or(1);
+                                    
+                                    // Ask what the roll is for
+                                    let purpose: String = Input::with_theme(&ColorfulTheme::default())
+                                        .with_prompt("What are you rolling for? (optional)")
+                                        .allow_empty(true)
+                                        .interact_text()?;
+                                    
                                     let results = roll_dice(num_dice, sides);
                                     
-                                    print_fancy_message("Dice Roll", "yellow");
+                                    if purpose.is_empty() {
+                                        print_fancy_message("Dice Roll", "yellow");
+                                    } else {
+                                        print_fancy_message(&format!("Dice Roll: {}", purpose), "yellow");
+                                    }
                                     print_dice_roll(&format!("{}d{}", num_dice, sides), &results);
+                                    
+                                    // Let the DM narrate the roll result if a purpose was provided
+                                    if !purpose.is_empty() {
+                                        let dm_response = process_dice_roll(
+                                            &dungeon_master, 
+                                            &format!("{}d{}", num_dice, sides), 
+                                            &results, 
+                                            &purpose, 
+                                            &mut state
+                                        ).await?;
+                                        
+                                        if !dm_response.is_empty() {
+                                            print_fancy_message("Dungeon Master:", "cyan");
+                                            println!("{}", dm_response.bright_white());
+                                        }
+                                    }
                                 },
                                 3 => {
                                     // Show character sheet
@@ -1195,10 +1320,16 @@ async fn main() -> Result<(), Box<dyn Error>> {
                 
                 println!("\n{}", "Commands during play:".bright_yellow());
                 println!("• Take an action - Describe what your character does");
-                println!("• Roll a skill check - Test your character's abilities");
-                println!("• Roll dice - Roll any dice combination (1d20, 2d6, etc.)");
+                println!("• Roll a skill check - Test your character's abilities with specific purpose");
+                println!("• Roll dice - Roll any dice combination (1d20, 2d6, etc.) with optional purpose");
                 println!("• Show character sheet - View your character's stats");
                 println!("• Save game - Save your progress");
+                
+                println!("\n{}", "Roll Purpose Feature:".bright_yellow());
+                println!("• When rolling skill checks or dice, you can specify what you're trying to accomplish");
+                println!("• The Dungeon Master will evaluate if your approach is appropriate");
+                println!("• For skill checks, your purpose is required to provide context");
+                println!("• For general dice rolls, a purpose is optional but enriches the narrative");
                 
                 println!("\n{}", "Basic D&D Concepts:".bright_yellow());
                 println!("• Ability Scores - Six core attributes (STR, DEX, CON, INT, WIS, CHA)");
