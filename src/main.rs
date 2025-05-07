@@ -689,15 +689,32 @@ fn create_character() -> Character {
         _ => vec!["Arcana", "History", "Investigation", "Nature", "Religion"],
     };
     
-    let skill_selections = MultiSelect::with_theme(&ColorfulTheme::default())
-        .with_prompt(format!("Select {} skills (space to select, enter to confirm)", num_skills))
-        .items(&available_skills)
-        .interact()
-        .unwrap_or_else(|_| vec![0]);
+    // Safety check - ensure num_skills doesn't exceed available skills
+    let max_selectable = std::cmp::min(num_skills as usize, available_skills.len());
     
+    // Use a safer approach with MultiSelect
+    let skill_selections = if !available_skills.is_empty() {
+        // Create a string explaining selection
+        let prompt = format!("Select {} skills (space to select, enter to confirm)", max_selectable);
+        
+        // Store the theme in a variable to extend its lifetime
+        let theme = ColorfulTheme::default();
+        
+        // Use MultiSelect directly
+        MultiSelect::with_theme(&theme)
+            .with_prompt(prompt)
+            .items(&available_skills)
+            .interact()
+            .unwrap_or_else(|_| vec![])
+    } else {
+        vec![]
+    };
+    
+    // Apply the selections safely
     for &index in &skill_selections {
-        if let Some(skill) = available_skills.get(index) {
-            character.skills.insert((*skill).to_string(), true);
+        if index < available_skills.len() {
+            let skill = available_skills[index];
+            character.skills.insert(skill.to_string(), true);
         }
     }
     
@@ -760,7 +777,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     let openai = openai::Client::from_env();
     
     let dungeon_master = openai
-        .agent("gpt-4o")
+        .agent("gpt-4.1")
         .preamble(
             "You are an expert Dungeon Master for a Dungeons & Dragons 5th Edition game. 
             
