@@ -5,7 +5,7 @@ use dotenv::dotenv;
 use indicatif::{ProgressBar, ProgressStyle};
 use rig::{
     completion::{Chat, Message, AssistantContent},
-    providers::openai,
+    providers::gemini,
     OneOrMany,
 };
 use rand::Rng;
@@ -834,10 +834,10 @@ fn create_character() -> Character {
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
     let _ = dotenv().ok();
-    let openai = openai::Client::from_env();
+    let gemini = gemini::Client::from_env();
     
-    let dungeon_master = openai
-        .agent("gpt-4.1")
+    let dungeon_master = gemini
+        .agent("gemini-2.5-flash-preview-04-17")
         .preamble(
             "You are an expert Dungeon Master for a Dungeons & Dragons 5th Edition game. 
             
