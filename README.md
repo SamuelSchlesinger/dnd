@@ -12,7 +12,7 @@
 
 ## About
 
-Experience the magic of Dungeons & Dragons with an AI Dungeon Master! This immersive command-line game brings the theater-of-the-mind experience of D&D to life through rich storytelling, character creation, and interactive gameplay powered by GPT-4o. Create your character, embark on epic quests, and let your imagination guide your adventure.
+Experience the magic of Dungeons & Dragons with an AI Dungeon Master! This immersive command-line game brings the theater-of-the-mind experience of D&D to life through rich storytelling, character creation, and interactive gameplay powered by Gemini. Create your character, embark on epic quests, and let your imagination guide your adventure.
 
 ## Features
 
